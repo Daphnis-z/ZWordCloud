@@ -2,14 +2,31 @@
 var d3 = require("d3"),
     cloud = require("../");
 
-// var fill = d3.scale.category20();
-var fill = d3.scaleOrdinal(d3.schemeCategory20);
+//加载数据
+//var words=["Hello", "world", "normally", "you", "want", "more", "words","than", "this"]
+//  .map(function(d) {
+//      return {text: d, size: 10 + Math.random() * 90, test: "haha"};
+//    });
+//  var article="There love one is \"only\" happiness ‘love’ in life,to love is love and " +
+//      "happiness be happiness loved..";
+  var article="The powerful lure of smartphones has created a heads-down culture in many " +
+      "public places. John Mervin in New York came across someone who just might benefit " +
+      "from a little digital detox.I'd never saved someone's life before, so I wasn't " +
+      "sure of the protocol.Speechless incomprehension on my part didn't seem appropriate." +
+      " But then neither did the young woman's giddy laughter, or her jaunty departure from" +
+      " what could so easily have been the scene of her death.It took my daughter's torrent " +
+      "of questions, as we turned away, to force the world back into a semblance of order:\"" +
+      "Daddy - what was she doing? Why was she on the tracks? What would have happened if a train came?\"";
+  var dataset=wordStatistics(article);
+  var words=dataset.map(function(word) {
+        return {
+          text: word.word,
+          size: 170*word.times/(dataset[0].times+dataset[dataset.length-1].times),
+          test: "haha"};
+      });
 
-var words=["Hello", "world", "normally", "you", "want", "more", "words","than", "this"]
-  .map(function(d) {
-      return {text: d, size: 10 + Math.random() * 90, test: "haha"};
-    });
-var layout = cloud()
+
+  var layout = cloud()
     .size([960, 400])
     .words(words)
     .padding(2)
@@ -18,9 +35,8 @@ var layout = cloud()
     .fontSize(function(d) { return d.size; })
     .on("end", draw);
 
-//测试代码
-// var w=layout.size()[0],h=layout.size()[1];
-
+// var fill = d3.scale.category20();
+  var fill = d3.scaleOrdinal(d3.schemeCategory20);
 layout.start();
 
 function draw(words) {
