@@ -2,7 +2,7 @@
 <html>
 <head>
 	<meta charset="UTF-8">
-	<title>词图云</title>
+	<title>词云图</title>
 	<style>
 		body {
 		  position: relative;
@@ -16,8 +16,12 @@
 </head>
 <body>
 	<hr id="first" />
-	<div>词图云</div>
+	<div>词云图</div>
+	设置过滤掉的单词
+	<textarea id="filter" style="width:100%">the,of</textarea>
+	<button id="reDrawBtn">刷新云图</button>
 	<hr />
+	<script type="text/javascript" src="jquery-2.1.1.js"></script>
 	<script type="text/javascript" src="wordStatistics.js"></script>
 	<script type="text/javascript" src="ZD3Cloud.js"></script>
 </body>

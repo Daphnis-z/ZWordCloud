@@ -36,8 +36,9 @@ function wordStatistics(article){
 
     var result=new Array();//存放单词和频率合并后的结果
     for(var i=0;i<words.length;++i){
-        //console.log(words[i]+":"+atimes[i]);
-        result.push({word:words[i],times:atimes[i]});
+        if(words[i]!=""){
+            result.push({word:words[i],times:atimes[i]});
+        }
     }
 
     result.sort(function(a,b){

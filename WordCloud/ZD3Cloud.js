@@ -1,5 +1,5 @@
 (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
-var d3 = require("d3"),
+  var d3 = require("d3"),
     cloud = require("../");
 
 //加载数据
@@ -7,55 +7,98 @@ var d3 = require("d3"),
 //  .map(function(d) {
 //      return {text: d, size: 10 + Math.random() * 90, test: "haha"};
 //    });
+
 //  var article="There love one is \"only\" happiness ‘love’ in life,to love is love and " +
 //      "happiness be happiness loved..";
-  var article="The powerful lure of smartphones has created a heads-down culture in many " +
-      "public places. John Mervin in New York came across someone who just might benefit " +
-      "from a little digital detox.I'd never saved someone's life before, so I wasn't " +
-      "sure of the protocol.Speechless incomprehension on my part didn't seem appropriate." +
-      " But then neither did the young woman's giddy laughter, or her jaunty departure from" +
-      " what could so easily have been the scene of her death.It took my daughter's torrent " +
-      "of questions, as we turned away, to force the world back into a semblance of order:\"" +
-      "Daddy - what was she doing? Why was she on the tracks? What would have happened if a train came?\"";
-  var dataset=wordStatistics(article);
-  var words=dataset.map(function(word) {
+//  var article="The powerful lure of smartphones has created a heads-down culture in many " +
+//      "public places. John Mervin in New York came across someone who just might benefit " +
+//      "from a little digital detox.I'd never saved someone's life before, so I wasn't " +
+//      "sure of the protocol.Speechless incomprehension on my part didn't seem appropriate." +
+//      " But then neither did the young woman's giddy laughter, or her jaunty departure from" +
+//      " what could so easily have been the scene of her death.It took my daughter's torrent " +
+//      "of questions, as we turned away, to force the world back into a semblance of order:\"" +
+//      "Daddy - what was she doing? Why was she on the tracks? What would have happened if a train came?\"";
+
+  var layout=null,fill=null;
+  var article;
+  $.ajax({
+    type: "POST",//请求方式
+    url: "article.txt",//地址，就是action请求路径
+    data: "text",//数据类型text xml json  script  jsonp
+    success: function(article){//返回的参数就是 action里面所有的有get和set方法的参数
+      var dataset=wordStatistics(article);
+      var words=dataset.map(function(word) {
         return {
           text: word.word,
-          size: 170*word.times/(dataset[0].times+dataset[dataset.length-1].times),
-          test: "haha"};
+          size: 170*word.times/(dataset[0].times+dataset[dataset.length-1].times)
+        };
       });
 
-
-  var layout = cloud()
-    .size([960, 400])
-    .words(words)
-    .padding(2)
-    .rotate(function() { return 0; })
-    .font("Impact")
-    .fontSize(function(d) { return d.size; })
-    .on("end", draw);
+      layout = cloud()
+          .size([960, 400])
+          .words(words)
+          .padding(2)
+          .rotate(function() { return 0; })
+          .font("Impact")
+          .fontSize(function(d) { return d.size; })
+          .on("end", draw);
 
 // var fill = d3.scale.category20();
-  var fill = d3.scaleOrdinal(d3.schemeCategory20);
-layout.start();
+      fill = d3.scaleOrdinal(d3.schemeCategory20);
+      layout.start();
+    }
+  });
 
-function draw(words) {
-  d3.select("div").append("svg")
-    .attr("width", layout.size()[0]).attr("height", layout.size()[1])
-    .append("g")
-    .attr("transform", "translate(" + layout.size()[0] / 2 + "," + layout.size()[1] / 2 + ")")
-    .selectAll("text").data(words)
-    .enter().append("text")
-    .style("font-size", function(d) { return d.size + "px"; })
-    .style("font-family", "Impact")
-    .style("fill", function(d, i) { return fill(i); })
-    .attr("text-anchor", "middle")
-    .attr("transform", function(d) {
-        return "translate(" + [d.x, d.y] + ")rotate(" + d.rotate + ")";
-      })
-    .text(function(d) { return d.text; });
-  d3.select("body").append("<hr />");
-}
+  //执行图形绘制
+  function draw(words) {
+    d3.select("div").append("svg")
+      .attr("width", layout.size()[0]).attr("height", layout.size()[1])
+      .append("g")
+      .attr("transform", "translate(" + layout.size()[0] / 2 + "," + layout.size()[1] / 2 + ")")
+      .selectAll("text").data(words)
+      .enter().append("text")
+      .style("font-size", function(d) { return d.size + "px"; })
+      .style("font-family", "Impact")
+      .style("fill", function(d, i) { return fill(i); })
+      .attr("text-anchor", "middle")
+      .attr("transform", function(d) {
+          return "translate(" + [d.x, d.y] + ")rotate(" + d.rotate + ")";
+        })
+      .text(function(d) { return d.text; });
+  }
+
+  //响应重绘云图事件
+  $("#reDrawBtn").click(function(event){
+    var filter=$("#filter").val().split(",");
+    $("svg").remove();
+    $.ajax({
+      type: "POST",//请求方式
+      url: "article.txt",//地址，就是action请求路径
+      data: "text",//数据类型text xml json  script  jsonp
+      success: function(article){//返回的参数就是 action里面所有的有get和set方法的参数
+        var dataset=wordStatistics(article);
+        var words=dataset.map(function(word) {
+          var wordSize=170*word.times/(dataset[0].times+dataset[dataset.length-1].times);
+          wordSize=filter.indexOf(word.word)<0? wordSize:0;//若单词在过滤列表里则不显示
+          return {
+            text: word.word, size: wordSize
+          };
+        });
+
+        layout = cloud()
+            .size([960, 400])
+            .words(words)
+            .padding(2)
+            .rotate(function() { return 0; })
+            .font("Impact")
+            .fontSize(function(d) { return d.size; })
+            .on("end", draw);
+
+        fill = d3.scaleOrdinal(d3.schemeCategory20);
+        layout.start();
+      }
+    });
+  });
 
 
 },{"../":2,"d3":4}],2:[function(require,module,exports){
